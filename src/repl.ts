@@ -2,6 +2,7 @@ import { commandExit } from "./command_exit.js";
 import { createInterface } from "node:readline";
 import { stringify } from "querystring";
 import { getCommands } from "./command.js";
+import { State } from "./state.js";
 
 export function cleanInput(input: string): string[]{
     const betaArray: string[] = input.split(" ");
@@ -15,20 +16,16 @@ export function cleanInput(input: string): string[]{
     return finalArray;
 };
 
-export function startREPL(){
-    const r1 = createInterface({
-        input: process.stdin,
-        output: process.stdout,
-        prompt: "Pokedex > "
-    })
+export function startREPL(state: State){
+    const r1 = state.interface;
     r1.prompt();
     r1.on('line', (line: string) => {
         const finalArray = cleanInput(line);
         const commandWord = finalArray[0];
-        const commandObj = getCommands();
+        const commandObj = state.commands;
         if (commandWord in commandObj){
             try {
-                commandObj[commandWord].callback(commandObj);
+                commandObj[commandWord].callback(state);
                 r1.prompt()
             } catch (error) {
                 console.log(error);
