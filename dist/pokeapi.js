@@ -47,4 +47,24 @@ export class PokeAPI {
             throw error;
         }
     }
+    async fetchPokemon(pokemon) {
+        const fullURL = PokeAPI.baseURL + "/pokemon/" + pokemon;
+        if (this.cache.check(fullURL)) {
+            console.log("Cache hit!");
+            const result = this.cache.get(fullURL);
+            return result;
+        }
+        try {
+            const response = await fetch(fullURL);
+            if (!response.ok) {
+                throw new Error(`Response status: ${response.status}`);
+            }
+            const result = await response.json();
+            this.cache.add(fullURL, result);
+            return result;
+        }
+        catch (error) {
+            throw error;
+        }
+    }
 }
