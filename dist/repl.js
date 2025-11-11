@@ -13,13 +13,13 @@ export function cleanInput(input) {
 export function startREPL(state) {
     const r1 = state.interface;
     r1.prompt();
-    r1.on('line', (line) => {
+    r1.on('line', async (line) => {
         const finalArray = cleanInput(line);
-        const commandWord = finalArray[0];
+        const [commandWord, ...argArray] = finalArray;
         const commandObj = state.commands;
         if (commandWord in commandObj) {
             try {
-                commandObj[commandWord].callback(state);
+                await commandObj[commandWord].callback(state, ...argArray);
                 r1.prompt();
             }
             catch (error) {
